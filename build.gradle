@@ -1,8 +1,10 @@
 plugins {
-	id 'org.jetbrains.kotlin.jvm' version '1.9.25'
-	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.25'
+	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.jetbrains.kotlin.jvm' version '1.9.25'
+	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.25'
+	// <- simplifies spring proxying
 }
 
 group = 'com.bramwork'
@@ -24,17 +26,29 @@ repositories {
 	mavenCentral()
 }
 
+ext['jakarta-servlet.version'] = '6.0.0'
+
 dependencies {
-	implementation 'org.webjars:bootstrap:5.2.3'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+	implementation 'jakarta.platform:jakarta.jakartaee-api:10.0.0'
+	// Include spring-boot-starter-web and exclude its default Tomcat dependency
+	implementation('org.springframework.boot:spring-boot-starter-web') {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+	}
+
+	// Include the Jetty starter
+	implementation 'org.springframework.boot:spring-boot-starter-jetty'
+
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'org.projectlombok:lombok'
+
+	// Web
+	implementation 'org.webjars:bootstrap:5.2.3'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 kotlin {
